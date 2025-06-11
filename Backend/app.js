@@ -10,7 +10,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: ['https://dexterdigi-task.vercel.app', 'http://localhost:5173', 'http://localhost:3000'],
+  origin: ['https://my-project-z1ah.onrender.com', 'http://localhost:5173', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
