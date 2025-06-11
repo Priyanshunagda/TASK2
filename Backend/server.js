@@ -161,7 +161,8 @@ app.use((req, res) => {
 });
 
 // Connect to MongoDB and start server
-mongoose.connect('mongodb+srv://priyanshudexterdigi22:Priyansh205@cluster0.hcb44kv.mongodb.net/')
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://priyanshudexterdigi22:Priyansh205@cluster0.hcb44kv.mongodb.net/';
+mongoose.connect(MONGODB_URI)
 .then(async () => {
   console.log('Connected to MongoDB');
   await seedData();
