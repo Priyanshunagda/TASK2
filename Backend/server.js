@@ -25,7 +25,7 @@ const app = express();
 // Configure CORS
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://task-2-priyanshu-nagdas-projects-007c85ca.vercel.app/', 'http://localhost:5173'] 
+    ? ['https://task-2-priyanshu-nagdas-projects-007c85ca.vercel.app', 'http://localhost:5173'] 
     : 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -166,7 +166,9 @@ mongoose.connect('mongodb+srv://priyanshudexterdigi22:Priyansh205@cluster0.hcb44
   console.log('Connected to MongoDB');
   await seedData();
   const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
+  });
 })
 .catch(err => {
   console.error('MongoDB connection error:', err);
