@@ -41,7 +41,7 @@ const EmployeeForm = ({ editMode = false }) => {
 
   const fetchRoles = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/roles');
+      const response = await fetch('https://task2-hn0y.onrender.com/api/roles');
       const data = await response.json();
       setRoles(data);
     } catch (error) {

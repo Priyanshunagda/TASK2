@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = 'https://task2-hn0y.onrender.com/api/auth';
 
 // Configure axios defaults
 axios.defaults.headers.post['Content-Type'] = 'application/json';
