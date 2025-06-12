@@ -160,6 +160,9 @@ app.use((req, res) => {
   res.status(404).json({ error: `Cannot ${req.method} ${req.path}` });
 });
 
+// Use Render's dynamic port
+const PORT = process.env.PORT || 5000;
+
 // Connect to MongoDB and start server
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://priyanshudexterdigi22:Priyansh205@cluster0.hcb44kv.mongodb.net/';
 mongoose.connect(MONGODB_URI)
@@ -167,15 +170,10 @@ mongoose.connect(MONGODB_URI)
   console.log('Connected to MongoDB');
   await seedData();
   
-  // Explicit port configuration for Render
-const app = express();
-
-// Use Render's dynamic port
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+  const server = app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+  
   // Handle server errors
   server.on('error', (error) => {
     console.error('Server error:', error);
@@ -188,8 +186,4 @@ app.listen(PORT, () => {
 .catch(err => {
   console.error('MongoDB connection error:', err);
   process.exit(1);
-});
-
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
 });
