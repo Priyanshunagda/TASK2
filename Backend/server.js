@@ -5,6 +5,10 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const path = require('path');
 
+// Configure port for Render deployment
+const PORT = parseInt(process.env.PORT || '10000');
+console.log('Starting server with PORT:', PORT);
+
 // Set environment variables if not set
 if (!process.env.JWT_SECRET) {
   if (process.env.NODE_ENV === 'production') {
@@ -160,10 +164,6 @@ app.use((req, res) => {
   res.status(404).json({ error: `Cannot ${req.method} ${req.path}` });
 });
 
-// Use Render's dynamic port
-const PORT = process.env.PORT || 3000;
-console.log('Environment PORT:', process.env.PORT);
-
 // Connect to MongoDB and start server
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://priyanshudexterdigi22:Priyansh205@cluster0.hcb44kv.mongodb.net/';
 mongoose.connect(MONGODB_URI)
@@ -171,11 +171,9 @@ mongoose.connect(MONGODB_URI)
   console.log('Connected to MongoDB');
   await seedData();
   
-  // Start server with host 0.0.0.0 to accept all incoming connections
   const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Process PID: ${process.pid}`);
-    console.log(`Environment: ${process.env.NODE_ENV}`);
-    console.log(`Server is running at http://0.0.0.0:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is listening at: http://0.0.0.0:${PORT}`);
   });
   
   // Handle server errors
@@ -185,15 +183,6 @@ mongoose.connect(MONGODB_URI)
       console.error(`Port ${PORT} is already in use`);
     }
     process.exit(1);
-  });
-
-  // Handle process termination
-  process.on('SIGTERM', () => {
-    console.log('Received SIGTERM signal. Closing server...');
-    server.close(() => {
-      console.log('Server closed. Exiting process.');
-      process.exit(0);
-    });
   });
 })
 .catch(err => {
