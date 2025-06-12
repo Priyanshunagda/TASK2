@@ -170,8 +170,9 @@ mongoose.connect(MONGODB_URI)
   console.log('Connected to MongoDB');
   await seedData();
   
-  const server = app.listen(PORT, () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is listening on: http://0.0.0.0:${PORT}`);
   });
   
   // Handle server errors
