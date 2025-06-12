@@ -9,6 +9,16 @@ const path = require('path');
 const PORT = parseInt(process.env.PORT || '10000');
 console.log('Starting server with PORT:', PORT);
 
+const app = express();
+
+// CORS Configuration - Must be before any other middleware
+app.use(cors({
+  origin: true, // Allow all origins temporarily for debugging
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 // Set environment variables if not set
 if (!process.env.JWT_SECRET) {
   if (process.env.NODE_ENV === 'production') {
@@ -20,37 +30,31 @@ if (!process.env.JWT_SECRET) {
   }
 }
 
+// Body parser middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log('-------------------------');
+  console.log('Request Details:');
+  console.log(`Method: ${req.method}`);
+  console.log(`Path: ${req.path}`);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  console.log('-------------------------');
+  next();
+});
+
 // Import routes
 const employeesRouter = require('./routes/employees');
 const rolesRouter = require('./routes/roles');
 const authRoutes = require('./routes/auth');
-const app = express();
 
-// CORS Configuration
-app.use(cors({
-  origin: ['https://admin-dashboard-pn.vercel.app', 'http://localhost:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-  credentials: true,
-  optionsSuccessStatus: 200
-}));
-
-// Enable pre-flight requests for all routes
-app.options('*', cors());
-
-// Additional headers middleware
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://admin-dashboard-pn.vercel.app');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  next();
-});
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/employees', employeesRouter);
+app.use('/api/roles', rolesRouter);
 
 // Serve static files from multiple possible locations
 app.use(express.static(path.join(__dirname, 'public')));
@@ -69,22 +73,6 @@ app.get('/', (req, res) => {
 // API Documentation route
 app.get('/api-docs', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Body parser middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log('-------------------------');
-  console.log('Request Details:');
-  console.log(`Method: ${req.method}`);
-  console.log(`Path: ${req.path}`);
-  console.log('Headers:', req.headers);
-  console.log('Body:', req.body);
-  console.log('-------------------------');
-  next();
 });
 
 // Seed initial data
@@ -125,11 +113,6 @@ const seedData = async () => {
     console.error('Error seeding data:', error);
   }
 };
-
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/employees', employeesRouter);
-app.use('/api/roles', rolesRouter);
 
 // Add routes for sidebar menus and permissions
 app.get('/api/sidebar-menus', (req, res) => {
