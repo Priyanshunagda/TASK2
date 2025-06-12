@@ -12,7 +12,7 @@ if (!process.env.JWT_SECRET) {
     process.exit(1);
   } else {
     console.warn('JWT_SECRET not set, using development secret. DO NOT USE IN PRODUCTION!');
-    process.env.JWT_SECRET = crypto.randomBytes(32).toString('hex');
+    process.env.JWT_SECRET = crypto.randomBytes(64).toString('hex');
   }
 }
 
@@ -166,9 +166,24 @@ mongoose.connect(MONGODB_URI)
 .then(async () => {
   console.log('Connected to MongoDB');
   await seedData();
+  
+  // Explicit port configuration for Render
   const PORT = process.env.PORT || 5000;
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
+  const HOST = '0.0.0.0';
+
+  const server = app.listen(PORT, HOST);
+  
+  server.on('listening', () => {
+    console.log(`Server is running on http://${HOST}:${PORT}`);
+  });
+
+  // Handle server errors
+  server.on('error', (error) => {
+    console.error('Server error:', error);
+    if (error.code === 'EADDRINUSE') {
+      console.error(`Port ${PORT} is already in use`);
+    }
+    process.exit(1);
   });
 })
 .catch(err => {
