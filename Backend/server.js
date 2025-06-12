@@ -168,15 +168,14 @@ mongoose.connect(MONGODB_URI)
   await seedData();
   
   // Explicit port configuration for Render
-  const PORT = process.env.PORT || 5000;
-  const HOST = '0.0.0.0';
+const app = express();
 
-  const server = app.listen(PORT, HOST);
-  
-  server.on('listening', () => {
-    console.log(`Server is running on http://${HOST}:${PORT}`);
-  });
+// Use Render's dynamic port
+const PORT = process.env.PORT || 5000;
 
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
   // Handle server errors
   server.on('error', (error) => {
     console.error('Server error:', error);
@@ -189,4 +188,8 @@ mongoose.connect(MONGODB_URI)
 .catch(err => {
   console.error('MongoDB connection error:', err);
   process.exit(1);
+});
+
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
 });
