@@ -29,12 +29,22 @@ const app = express();
 // Configure CORS
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://task-2-priyanshu-nagdas-projects-007c85ca.vercel.app', 'http://localhost:5173'] 
-    : 'http://localhost:5173',
+    ? ['https://admin-dashboard-pn.vercel.app', 'http://localhost:5173', 'https://task2-hn0y.onrender.com'] 
+    : ['http://localhost:5173', 'http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin'],
+  exposedHeaders: ['Access-Control-Allow-Origin'],
   credentials: true
 }));
+
+// Add security headers
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  next();
+});
 
 // Serve static files from multiple possible locations
 app.use(express.static(path.join(__dirname, 'public')));
