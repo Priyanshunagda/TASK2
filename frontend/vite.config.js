@@ -6,6 +6,15 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [react()],
   root: '.',
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://task2-hn0y.onrender.com',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
   build: {
     outDir: 'dist',
     rollupOptions: {

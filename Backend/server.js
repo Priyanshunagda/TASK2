@@ -26,23 +26,29 @@ const rolesRouter = require('./routes/roles');
 const authRoutes = require('./routes/auth');
 const app = express();
 
-// Configure CORS
+// CORS Configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://admin-dashboard-pn.vercel.app', 'http://localhost:5173', 'https://task2-hn0y.onrender.com'] 
-    : ['http://localhost:5173', 'http://localhost:3000'],
+  origin: ['https://admin-dashboard-pn.vercel.app', 'http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin'],
-  exposedHeaders: ['Access-Control-Allow-Origin'],
-  credentials: true
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
 
-// Add security headers
+// Enable pre-flight requests for all routes
+app.options('*', cors());
+
+// Additional headers middleware
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin);
-  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Origin', 'https://admin-dashboard-pn.vercel.app');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
   next();
 });
 
